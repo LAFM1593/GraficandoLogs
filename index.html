@@ -58,56 +58,8 @@
 			</div>
 			
 			
-            <div class="row clearfix">
-				<!-- Line Chart -->
-                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                    <div class="card">
-						<div class="header">
-							<h2>Instrumented Test</h2>
-                            <ul class="header-dropdown m-r--5">
-                                <li class="dropdown">
-                                    <text href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
-                                        <i class="material-icons"></i>
-                                    </text>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Action</a></li>
-                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Another action</a></li>
-                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Something else here</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>                        
-                        <div class="body"><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;" src="./src/saved_resource.html"></iframe>
-                            <canvas id="grafic_enroll" height="220" width="441" style="display: block; width: 441px; height: 220px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-				
-				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                    <div class="card">
-						<div class="header">
-							<h2>Instrumented Test</h2>
-                            <ul class="header-dropdown m-r--5">
-                                <li class="dropdown">
-                                    <text href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
-                                        <i class="material-icons"></i>
-                                    </text>
-                                    <ul class="dropdown-menu pull-right">
-                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Action</a></li>
-                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Another action</a></li>
-                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Something else here</a></li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>                        
-                        <div class="body"><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;" src="./src/saved_resource.html"></iframe>
-                            <canvas id="grafic_enroll_2" height="220" width="441" style="display: block; width: 441px; height: 220px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-				
-				
-				
+            <div class="row clearfix" id="container_grafic">
+								
             </div>
                 
             </div>
@@ -126,28 +78,38 @@
 	
 	function initTables(data){
 		
-	var color = ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850", "#33FF36", "#3361FF"];
+		var color = ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850", "#33FF36", "#3361FF"];
 	
-			data = JSON.parse(data);
+		data = JSON.parse(data);
 			
+		var pruebas = [];
+			
+		pruebas = data.reduce(function(result, current) {
+			result[current.name] = result[current.name] || [];
+			result[current.name].push(current);
+			return result;
+		}, {});
+		
+		$.each(pruebas, function(name, obj){
+		
 			var flujos = [];
 			var metodos = [];
 			var metodos_label = [];
 			var flujos_dataset_tiempo = [];
 			var flujos_dataset_codigo = [];
-			
-			metodos = data.reduce(function(result, current) {
+					
+			metodos = obj.reduce(function(result, current) {
 				result[current.description] = result[current.description] || [];
 				result[current.description].push(current);
 				return result;
 			}, {});
 			
-			flujos = data.reduce(function(result, current) {
+			flujos = obj.reduce(function(result, current) {
 				result[current.number] = result[current.number] || [];
 				result[current.number].push(current);
 				return result;
 			}, {});
-			
+
 			$.each(metodos, function(i, obj){
 				metodos_label.push(obj[0].description);
 			});
@@ -187,11 +149,13 @@
 				  
 			});
 			
-			console.log(flujos_dataset_tiempo);
+			var grafica1 = 'grafica_1_' + name.replace(' ','_');
+			var grafica2 = 'grafica_2_' + name.replace(' ','_');
+						
+			appendGrafic(grafica1, name);			
+			appendGrafic(grafica2, name);
 			
-			
-			
-			new Chart(document.getElementById("grafic_enroll"), {
+			new Chart(document.getElementById(grafica1), {
 			  type: 'line',
 			  data: {
 				labels: metodos_label,
@@ -207,7 +171,7 @@
 			  }
 			});
 			
-			new Chart(document.getElementById("grafic_enroll_2"), {
+			new Chart(document.getElementById(grafica2), {
 			  type: 'radar',
 			  data: {
 				labels: metodos_label,
@@ -222,10 +186,28 @@
 				}
 			  }
 			});
-	
+			
+		});
+			
 	}
 	
-	function readSingleFile(evt) {
+	function appendGrafic(id, name) {
+		var grafica = 		
+			'<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">'+
+			'    <div class="card">'+
+			'		<div class="header">'+
+			'			<h2>' + name + '</h2>'+
+			'        </div>'+                       
+			'        <div class="body"><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;" src="./src/saved_resource.html"></iframe>'+
+			'            <canvas id="' + id + '" height="220" width="441" style="display: block; width: 441px; height: 220px;"></canvas>'+
+			'        </div>'+
+			'    </div>'+
+			'</div>';
+		
+		$("#container_grafic").append(grafica);
+	}
+	
+		function readSingleFile(evt) {
 				//Retrieve the first (and only!) File from the FileList object
 				var f = evt.target.files[0]; 
 
