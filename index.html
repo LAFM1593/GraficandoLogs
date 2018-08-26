@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="chrome"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    
+	<title>Instrumented - Test </title>
+    <link href="./src/bootstrap.css" rel="stylesheet">
+    <link href="./src/style.css" rel="stylesheet">
+    	
+	<style> 
+		.boder{
+			margin-top: 5px;
+			margin-bottom: 0px;
+			margin-right: 50px;
+			margin-left: 50px;
+		}
+	</style>
+</head>
+
+<body class="theme-red">
+
+    <!-- Page Loader -->
+    <div class="page-loader-wrapper" style="display: none;">
+        <div class="loader">
+            <div class="preloader">
+                <div class="spinner-layer pl-red">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+            <p>Cargando...</p>
+        </div>
+    </div>
+    <!-- #END# Page Loader -->
+
+	<section class="">
+		<br/>
+        <div class="boder">
+		
+			<div class="row clearfix">
+				<!-- Line Chart -->
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					<h3>Producto de control de calidad Android</h3>
+				</div>
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+					<h5> </br>
+						<div class="form-group">
+							<form name="foo">
+								<input type="file" id="fileinput">
+							</form>						
+						</div>
+					</h5>
+				</div>				
+			</div>
+			
+			
+            <div class="row clearfix">
+				<!-- Line Chart -->
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="card">
+						<div class="header">
+							<h2>Instrumented Test</h2>
+                            <ul class="header-dropdown m-r--5">
+                                <li class="dropdown">
+                                    <text href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                        <i class="material-icons"></i>
+                                    </text>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Action</a></li>
+                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Another action</a></li>
+                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Something else here</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>                        
+                        <div class="body"><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;" src="./src/saved_resource.html"></iframe>
+                            <canvas id="grafic_enroll" height="220" width="441" style="display: block; width: 441px; height: 220px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+				
+				<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <div class="card">
+						<div class="header">
+							<h2>Instrumented Test</h2>
+                            <ul class="header-dropdown m-r--5">
+                                <li class="dropdown">
+                                    <text href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                                        <i class="material-icons"></i>
+                                    </text>
+                                    <ul class="dropdown-menu pull-right">
+                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Action</a></li>
+                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Another action</a></li>
+                                        <li><a href="javascript:void(0);" class=" waves-effect waves-block">Something else here</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>                        
+                        <div class="body"><iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;" src="./src/saved_resource.html"></iframe>
+                            <canvas id="grafic_enroll_2" height="220" width="441" style="display: block; width: 441px; height: 220px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+				
+				
+				
+            </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap Core Js -->
+	<script src="./src/jquery.min.js"></script>
+    <script src="./src/bootstrap.js"></script>
+	<script src="./src/Chart.bundle.js"></script>
+	<script src="./src/bootstrap-filestyle.js"></script>
+
+    <!-- Custom Js -->
+
+	<script>
+	
+	function initTables(data){
+		
+	var color = ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850", "#33FF36", "#3361FF"];
+	
+			data = JSON.parse(data);
+			
+			var flujos = [];
+			var metodos = [];
+			var metodos_label = [];
+			var flujos_dataset_tiempo = [];
+			var flujos_dataset_codigo = [];
+			
+			metodos = data.reduce(function(result, current) {
+				result[current.description] = result[current.description] || [];
+				result[current.description].push(current);
+				return result;
+			}, {});
+			
+			flujos = data.reduce(function(result, current) {
+				result[current.number] = result[current.number] || [];
+				result[current.number].push(current);
+				return result;
+			}, {});
+			
+			$.each(metodos, function(i, obj){
+				metodos_label.push(obj[0].description);
+			});
+						
+			$.each(flujos, function(i, obj){
+			
+				var tiempos = new Array(metodos_label.length);
+				var codigos = new Array(metodos_label.length);
+				
+				$.each(obj, function(i, obj){				
+					var position = metodos_label.indexOf(obj.description);
+					tiempos[position] = obj.elapsed_time;					
+				});
+				
+				$.each(obj, function(i, obj){
+					var position = metodos_label.indexOf(obj.description);
+					codigos[position] = obj.response.codigo;
+				});
+			
+				flujos_dataset_tiempo.push({ 
+					data: tiempos,
+					label: "Prueba #" + i,
+					borderColor: color[i],
+					backgroundColor: color[i],
+					fill: false
+				  });
+				  
+				flujos_dataset_codigo.push({ 
+					data: codigos,
+					label: "Prueba #" + i,
+					borderColor: color[i],
+					backgroundColor: color[i],
+					pointBackgroundColor: color[i],
+					fill: false
+				  });
+				  
+				  
+			});
+			
+			console.log(flujos_dataset_tiempo);
+			
+			
+			
+			new Chart(document.getElementById("grafic_enroll"), {
+			  type: 'line',
+			  data: {
+				labels: metodos_label,
+				datasets: flujos_dataset_tiempo
+			  },
+			  options: {
+			    multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>",
+				legend: { display: true },
+				title: {
+					display: true,
+					text: 'Tiempo de respuesta en (ms) por # prueba y solicitud.'
+				}
+			  }
+			});
+			
+			new Chart(document.getElementById("grafic_enroll_2"), {
+			  type: 'radar',
+			  data: {
+				labels: metodos_label,
+				datasets: flujos_dataset_codigo
+			  },
+			  options: {
+			  	multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>",
+				legend: { display: true },
+				title: {
+					display: true,
+					text: 'Codigos de respuesta por # prueba y solicitud.'
+				}
+			  }
+			});
+	
+	}
+	
+	function readSingleFile(evt) {
+				//Retrieve the first (and only!) File from the FileList object
+				var f = evt.target.files[0]; 
+
+				if (f) {
+				  var r = new FileReader();
+				  r.onload = function(e) { 
+				  
+					initTables('[' + e.target.result + ']');
+				  				
+				  }
+				  r.readAsText(f);
+				} else { 
+				  alert("Failed to load file");
+				}
+			  }
+
+			document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+	
+	
+			
+			
+			
+	</script>
+		
+</body></html>
