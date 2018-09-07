@@ -59,6 +59,52 @@
 			
 			
             <div class="row clearfix" id="container_grafic">
+			
+				<div class="col-lg-7 col-md-7 col-sm-12 col-xs-12">
+					<div class="card">
+						<div class="header">
+							<h2>  ANDROID  </h2>
+						</div>                       
+						<div class="body" style="text-align: center;">
+						
+							<table>
+							  <tr>
+								<td>
+									<h6 id="textos" style="display: none;">
+										Fecha <br><br> <text id="fecha"></text>
+										<br><br><br><br><br>
+										No. Pruebas <br><br> # <text id="npruebas"></text>
+										<br><br><br><br><br>
+										No. Usuarios <br><br> # <text id="nusuarios"></text>
+										<br><br><br><br><br><br>
+									</h6>
+								</td>
+								<td>
+									<div>
+										<canvas id="demo" height="380" width="600" style="display: inline-block; margin-left: -40px;"></canvas>
+									</div>
+								</td>
+							  </tr>	
+							</table>
+						
+							
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+					<div class="card">
+						<div class="header">
+							<h2>  ANDROID  </h2>
+						</div>                       
+						<div class="body" style="text-align: center;">
+							<div>
+								<canvas id="demo1" height="380" width="400" style="display: inline-block;"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+								
 								
             </div>
                 
@@ -69,127 +115,200 @@
     <!-- Bootstrap Core Js -->
 	<script src="./src/jquery.min.js"></script>
     <script src="./src/bootstrap.js"></script>
-	<script src="./src/Chart.bundle.js"></script>
+	<script src="./src/Chart.min.js"></script>
 	<script src="./src/bootstrap-filestyle.js"></script>
 
     <!-- Custom Js -->
 
 	<script>
 	
-	function initTables(data){
+	/* Utileria ***************************************************/
 		
-		var color = ["#3e95cd", "#8e5ea2","#3cba9f","#e8c3b9","#c45850", "#33FF36", "#3361FF"];
+		function TeamPlayerLabelSolicitud(label, team1Label, team2Label) {
+		  this.label = label;
+		  this["success"] = team1Label;
+		  this["error"] = team2Label;
+		}
+		
+		function TeamPlayerLabelUsuario(label, team1Label, team2Label) {
+		  this.label = label;
+		  this["success"] = team1Label;
+		  this["error"] = team2Label;
+		}
+		
+		TeamPlayerLabelSolicitud.prototype.toString = function () {
+		  return this.label;
+		}
+		
+		TeamPlayerLabelUsuario.prototype.toString = function () {
+		  return this.label;
+		}
 	
-		data = JSON.parse(data);
-			
-		var pruebas = [];
-			
-		pruebas = data.reduce(function(result, current) {
-			result[current.name] = result[current.name] || [];
-			result[current.name].push(current);
+	/************************************************************/
+
+	function demoToolTip(dataJSON){
+	
+		//Obtener numero de intentos
+		//Obtener numero de intentos correctos
+		//Obtener numero de intentos incorrectos
+		
+		dataJSON = JSON.parse(dataJSON);
+		
+		var logs = [];
+		var intentos = [];
+		var label_intentos = [];
+		var usuarios = [];
+		var label_usuarios = [];
+		var fecha = null;
+		var solicitudes = [];
+		var label_solicitudes = [];
+		
+		var label_solicitudes_success = [];
+		var label_solicitudes_error = []
+		
+		var label_solicitudes_usuario = []
+		var label_tiempo_usuario = []
+		
+		$.each(dataJSON, function(number, obj){
+			logs.push(obj);
+		});
+		
+		intentos = logs.reduce(function(result, current) {
+			result[current.number] = result[current.number] || [];
+			result[current.number].push(current);
+			return result;
+		}, {});
+				
+		usuarios = intentos[1].reduce(function(result, current) {		
+			result[current.user] = result[current.user] || [];
+			result[current.user].push(current);
 			return result;
 		}, {});
 		
-		$.each(pruebas, function(name, obj){
+		solicitudes = intentos[1].reduce(function(result, current) {		
+			result[current.description] = result[current.description] || [];
+			result[current.description].push(current);
+			return result;
+		}, {});
+								
+		$.each(intentos, function(number, obj){
 		
-			var flujos = [];
-			var metodos = [];
-			var metodos_label = [];
-			var flujos_dataset_tiempo = [];
-			var flujos_dataset_codigo = [];
-					
-			metodos = obj.reduce(function(result, current) {
-				result[current.description] = result[current.description] || [];
-				result[current.description].push(current);
-				return result;
-			}, {});
-			
-			flujos = obj.reduce(function(result, current) {
-				result[current.number] = result[current.number] || [];
-				result[current.number].push(current);
-				return result;
-			}, {});
-
-			$.each(metodos, function(i, obj){
-				metodos_label.push(obj[0].description);
-			});
-						
-			$.each(flujos, function(i, obj){
-			
-				var tiempos = new Array(metodos_label.length);
-				var codigos = new Array(metodos_label.length);
+			if(fecha == null)			
+				fecha = obj[0].date;
 				
-				$.each(obj, function(i, obj){				
-					var position = metodos_label.indexOf(obj.description);
-					tiempos[position] = obj.elapsed_time;					
-				});
-				
-				$.each(obj, function(i, obj){
-					var position = metodos_label.indexOf(obj.description);
-					codigos[position] = obj.response.codigo;
-				});
-			
-				flujos_dataset_tiempo.push({ 
-					data: tiempos,
-					label: "Prueba #" + i,
-					borderColor: color[i],
-					backgroundColor: color[i],
-					fill: false
-				  });
-				  
-				flujos_dataset_codigo.push({ 
-					data: codigos,
-					label: "Prueba #" + i,
-					borderColor: color[i],
-					backgroundColor: color[i],
-					pointBackgroundColor: color[i],
-					fill: false
-				  });
-				  
-				  
-			});
-			
-			var grafica1 = 'grafica_1_' + name.replace(' ','_');
-			var grafica2 = 'grafica_2_' + name.replace(' ','_');
-						
-			appendGrafic(grafica1, name);			
-			appendGrafic(grafica2, name);
-			
-			new Chart(document.getElementById(grafica1), {
-			  type: 'line',
-			  data: {
-				labels: metodos_label,
-				datasets: flujos_dataset_tiempo
-			  },
-			  options: {
-			    multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>",
-				legend: { display: true },
-				title: {
-					display: true,
-					text: 'Tiempo de respuesta en (ms) por # prueba y solicitud.'
-				}
-			  }
-			});
-			
-			new Chart(document.getElementById(grafica2), {
-			  type: 'radar',
-			  data: {
-				labels: metodos_label,
-				datasets: flujos_dataset_codigo
-			  },
-			  options: {
-			  	multiTooltipTemplate: "<%= datasetLabel %>: <%= value %>",
-				legend: { display: true },
-				title: {
-					display: true,
-					text: 'Codigos de respuesta por # prueba y solicitud.'
-				}
-			  }
-			});
-			
+			label_intentos.push(number);
 		});
+		
+		$.each(usuarios, function(number, obj){	
+		
+			var solicitudes = 0;
+			var tiempo = 0;
 			
+			$.each(logs, function(user, obj){
+				if(number == obj.user){
+					solicitudes++;
+					tiempo += parseInt(obj.elapsed_time);
+				}
+			});
+			
+			label_solicitudes_usuario.push(solicitudes);
+			label_tiempo_usuario.push(Math.floor( tiempo / 1000 ));
+		
+			label_usuarios.push(new TeamPlayerLabelUsuario(number, "Solicitudes", "Tiempo"));
+		});
+		
+		label_tiempo_usuario.push(Math.floor(  60000 / 1000 ))
+		
+		$.each(solicitudes, function(name, obj){
+						
+			var contadorp = 0;
+			var contadorn = 0;
+			
+			$.each(logs, function(number, obj){
+				if(name == obj.description)
+					if(obj.response.codigo >= 0){
+						contadorp++;
+					}else{
+						contadorn++;
+					}	
+			});
+			
+			label_solicitudes_success.push(contadorp);
+			label_solicitudes_error.push(contadorn);
+	
+			label_solicitudes.push(new TeamPlayerLabelSolicitud(name, "Exitosos", "No Exitosos"));
+		});
+					
+		//Asignar información
+		
+		$('#fecha').text(fecha);
+		$('#npruebas').text(label_intentos.length);
+		$('#nusuarios').text(label_usuarios.length);
+		
+		$('#textos').show();
+
+		var dataSolicitudes = {
+		  labels: label_solicitudes,
+		  datasets: [
+			{
+			  label: "success",
+			  fillColor: "rgba(151,187,205,0.5)",
+			  strokeColor: "rgba(151,187,205,0.8)",
+			  data: label_solicitudes_success 
+			},
+			{
+			  label: "error",
+			  fillColor: "rgba(220,220,220,0.5)",
+			  strokeColor: "rgba(220,220,220,0.8)",
+			  data: label_solicitudes_error
+			}			
+		  ]
+		};
+		
+		var dataUsuarios = {
+		  labels: label_usuarios,
+		  datasets: [
+			{
+			  label: "success",
+			  fillColor: "rgba(220,220,220,0.5)",
+			  strokeColor: "rgba(220,220,220,0.8)",
+			  pointColor: "rgba(151,187,205,1)",
+			  data: label_solicitudes_usuario
+			},
+			{
+			  label: "error",
+			  fillColor: "rgba(151,187,205,0.5)",
+			  strokeColor: "rgba(151,187,205,0.8)",
+			  data: label_tiempo_usuario
+			}
+		  ]
+		};
+
+		var ctx = document.getElementById("demo").getContext("2d");
+		new Chart(ctx).Bar(dataSolicitudes, {
+		  multiTooltipTemplate: function (self) {
+			return self.label[self.datasetLabel] + ' : ' + self.value;
+		  }
+		});
+		
+		var ctx1 = document.getElementById("demo1").getContext("2d");
+		new Chart(ctx1).Line(dataUsuarios, {
+		  multiTooltipTemplate: function (self) {		  
+			if(self.datasetLabel == "success")	  		  
+				return self.label[self.datasetLabel] + ' : ' + self.value;
+			else{
+				return self.label[self.datasetLabel] + ' : ' + self.value + ' seg.';
+			}
+
+		  }
+		});
+		
+		
+	
 	}
+	
+	
+	/************************************************************/
 	
 	function appendGrafic(id, name) {
 		var grafica = 		
@@ -207,29 +326,41 @@
 		$("#container_grafic").append(grafica);
 	}
 	
-		function readSingleFile(evt) {
-				//Retrieve the first (and only!) File from the FileList object
-				var f = evt.target.files[0]; 
+	function readSingleFile(evt) {
+		//Retrieve the first (and only!) File from the FileList object
+		var f = evt.target.files[0]; 
 
-				if (f) {
-				  var r = new FileReader();
-				  r.onload = function(e) { 
-				  
-					initTables('[' + e.target.result + ']');
-				  				
-				  }
-				  r.readAsText(f);
-				} else { 
-				  alert("Failed to load file");
-				}
-			  }
+		if (f) {
+		  var r = new FileReader();
+		  r.onload = function(e) { 
+		  
+			var data = e.target.result;
+		  
+			demoToolTip('[' + data.substring(0, data.length - 1) + ']');
+		  
+			//initTables('[' + e.target.result + ']');
+		  				
+		  }
+		  r.readAsText(f);
+		} else { 
+		  alert("Failed to load file");
+		}
+	}
 
-			document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
+	function getRandomColor() {
+	  var letters = '0123456789ABCDEF';
+	  var color = '#';
+	  for (var i = 0; i < 6; i++) {
+		color += letters[Math.floor(Math.random() * 16)];
+	  }
+	  return color;
+	}
+
+
+	document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
 	
-	
-			
-			
-			
 	</script>
 		
 </body></html>
