@@ -143,6 +143,16 @@
 		TeamPlayerLabelUsuario.prototype.toString = function () {
 		  return this.label;
 		}
+		
+		function getState(data, postcode){
+
+		  for(var x in data){
+			if(data[x].number && data[x].number.indexOf(postcode.toString())!=-1) return data[x].solicitudes;
+		  }
+		  
+		  return "Not Found";
+		  
+		}
 	
 	/************************************************************/
 
@@ -166,6 +176,7 @@
 		var label_solicitudes_success = [];
 		var label_solicitudes_error = []
 		
+		var label_solicitudes_default = []
 		var label_solicitudes_usuario = []
 		var label_tiempo_usuario = []
 		
@@ -211,7 +222,8 @@
 				}
 			});
 			
-			label_solicitudes_usuario.push(solicitudes);
+			label_solicitudes_default.push(0)
+			label_solicitudes_usuario.push({number,solicitudes,tiempo});
 			label_tiempo_usuario.push(Math.floor( tiempo / 1000 ));
 		
 			label_usuarios.push(new TeamPlayerLabelUsuario(number, "Solicitudes", "Tiempo"));
@@ -273,7 +285,7 @@
 			  fillColor: "rgba(220,220,220,0.5)",
 			  strokeColor: "rgba(220,220,220,0.8)",
 			  pointColor: "rgba(151,187,205,1)",
-			  data: label_solicitudes_usuario
+			  data: label_solicitudes_default
 			},
 			{
 			  label: "error",
@@ -290,12 +302,15 @@
 			return self.label[self.datasetLabel] + ' : ' + self.value;
 		  }
 		});
-		
+						
 		var ctx1 = document.getElementById("demo1").getContext("2d");
 		new Chart(ctx1).Line(dataUsuarios, {
-		  multiTooltipTemplate: function (self) {		  
-			if(self.datasetLabel == "success")	  		  
-				return self.label[self.datasetLabel] + ' : ' + self.value;
+		  multiTooltipTemplate: function (self) {	
+
+			console.log(self.label.label);
+		  
+			if(self.datasetLabel == "success")
+				return self.label[self.datasetLabel] + ' : ' + getState(label_solicitudes_usuario, self.label.label);  		  
 			else{
 				return self.label[self.datasetLabel] + ' : ' + self.value + ' seg.';
 			}
